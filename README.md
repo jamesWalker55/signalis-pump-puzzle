@@ -2,6 +2,8 @@
 
 The game Signalis features a puzzle dubbed the "Pump Puzzle". This repository contains a simple leetcode-style program that searches for solutions using a breadth-first graph traversal method.
 
+I intentionally keep the program running even after finding the first optimal solution, to allow it to search for more alternative solutions.
+
 To run it, just do:
 
 ```bash
