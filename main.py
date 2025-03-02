@@ -120,37 +120,32 @@ class PumpState(NamedTuple):
         return result
 
 
-def find_solutions(state: PumpState, max_depth: int) -> list[list[PumpState]]:
-    if max_depth <= 0:
-        return []
+def get_solution(state: PumpState) -> list[PumpState]:
+    to_check: list[list[PumpState]] = [[state]]
 
-    paths: list[list[PumpState]] = []
+    while len(to_check) > 0:
+        path = to_check.pop(0)
 
-    for next_state in state.next_states():
-        if next_state.is_final_state():
-            # final state found, add it as a final path
-            paths.append([next_state])
-        else:
-            # recursive call, find solutions in the given state
-            for subpath in find_solutions(next_state, max_depth - 1):
-                paths.append([next_state, *subpath])
+        # check the next immediate states
+        for next_state in path[-1].next_states():
+            if next_state.is_final_state():
+                # final state found, return it
+                return [*path, next_state]
 
-    return paths
+            to_check.append([*path, next_state])
+
+    # should be unreachable, added to satisfy typechecker
+    raise RuntimeError("failed to reach final state from intial state")
 
 
 def main():
     initial_state = PumpState.initial_state()
 
-    solutions = find_solutions(initial_state, 9)
+    solution = get_solution(initial_state)
 
-    # sort solutions by length
-    solutions.sort(key=lambda x: len(x))
-
-    for i, solution in enumerate(solutions):
-        print(f"Solution {i}: {len(solution)} steps")
-        print(f"  {initial_state}")
-        for state in solution:
-            print(f"  {state}")
+    print(f"Solution: {len(solution) - 1} steps")
+    for state in solution:
+        print(f"  {state}")
 
 
 if __name__ == "__main__":
